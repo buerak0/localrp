@@ -1,0 +1,209 @@
+
+<!-- saved from url=(0045)https://old.octothorp.team/loading/dobrograd/ -->
+<html><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+	
+	<style>
+		@font-face {
+			font-family: 'blogger-sans';
+			src: url('https://cdn.octothorp.team/gmod/resource/fonts/bloggerm.ttf') format('truetype');
+		}
+
+		html {
+			height: 100%;
+		}
+
+		body {
+			padding: 0;
+			margin: 0;
+			height: 100%;
+
+			background-color: #554455;
+			background-image: url(https://i.imgur.com/nAvq29O.png);
+			background-size: cover;
+			background-position: center;
+			background-repeat: no-repeat;
+		}
+
+		#main-text {
+			position: absolute;
+			width: 100%;
+			height: 100%;
+			background-image: url(loadingscreen_text.png);
+			background-size: contain;
+			background-position: center;
+			background-repeat: no-repeat;
+		}
+
+		#loading {
+			position: absolute;
+			top: 50%;
+			margin: -200px 8.5%;
+			height: 400px;
+			width: 83%;
+			border-bottom: dashed 2px rgba(0,0,0, 0.35);
+			/* border-radius: 8px; */
+			/* background-color: #3B2F3B; */
+		}
+
+		#car {
+			width: 64px;
+			height: 64px;
+			position: absolute;
+			left: 1%;
+			bottom: 0;
+		}
+
+		#city {
+			width: 96px;
+			height: 96px;
+			position: absolute;
+			right: 1%;
+			bottom: 0;
+		}
+
+		#hint {
+			/* position: absolute; */
+			/* bottom: 20px; */
+			/* left: 30px; */
+			margin: auto;
+			padding-top: 25px;
+			text-align: center;
+			color: #EEEEEE;
+			font-family: blogger-sans;
+			font-size: 18pt;
+			max-width: 800px;
+
+			transition: opacity 0.5s;
+			opacity: 1;
+		}
+
+		#hint2 {
+			position: fixed;
+			bottom: 20px;
+			left: 30px;
+			color: #EEEEEE;
+			font-family: blogger-sans;
+			font-size: 18pt;
+			margin: 0;
+
+			animation-name: softblink;
+			animation-duration: 3s;
+			animation-iteration-count: infinite;
+		}
+
+		@keyframes softblink {
+			0% { opacity: 1 }
+			50% { opacity: 0.35 }
+			90% { opacity: 1 }
+		}
+
+		#hint.fade {
+			opacity: 0;
+		}
+	</style>
+</head>
+
+<body>
+	<div id="main-text"></div>
+	<div id="loading">
+		<img src="./old.octothorp.team_files/city1.png" id="city">
+		<img src="./old.octothorp.team_files/bus.png" id="car">
+	</div>
+	<p id="hint" class="">Если ты хочешь получить доступ к новым инструментам или другим интересностям, можно заглянуть в магазин плюшек на F4</p>
+	<p id="hint2">Едем в Гриндейл...</p>
+
+	<script>
+		if (Math.random() > 0.98) document.getElementById('car').src = 'https://cdn.octothorp.team/icons/color64/car' + Math.floor(Math.random() * 3 + 1) + '.png'
+
+		function shuffle(a) {
+			var j, x, i
+			for (i = a.length - 1; i > 0; i--) {
+				j = Math.floor(Math.random() * (i + 1))
+				x = a[i]
+				a[i] = a[j]
+				a[j] = x
+			}
+			return a
+		}
+
+		var hints = shuffle([
+			'Не говори неролевую информацию в голосовой чат или ролевой текстовый чат (MG). Используй команду /l, чтобы не получить бан',
+			'Если ты у нас впервые, обязательно ознакомься с обучением (F1)<br>Так будет намного легче сориентироваться и понять, с чего начать',
+			'Если игрок нарушил правило и это тебе мешает, не нужно прибегать к оскорблениям или ответным нарушениям, это карается баном<br>В таком случае стоит уведомить администратора',
+			'Старайся чаще использовать ролевые команды, например /me и /it,<br>они помогут хорошо развить твою историю',
+			'Ты можешь настроить краткое описание внешности<br>в меню персонажа на F4',
+			'Ты можешь узнать много полезной информации о твоем окружении используя функцию \'приглядеться\'<br>(по умолчанию активируется на клавишу G)',
+			'Клавиши особых действий нашего игрового режима можно изменить в меню настроек на F4',
+			'Если нужно узнать рецепт крафта какого-то предмета, всегда можно посмотреть его в справочнике на F4',
+			'Если ты хочешь получить доступ к новым инструментам или другим интересностям, можно заглянуть в магазин плюшек на F4',
+		])
+
+		var curHintID = -1
+		function nextHint() {
+			var el = document.getElementById('hint')
+			el.classList.add('fade')
+			setTimeout(function() {
+				curHintID ++
+				if (curHintID >= hints.length) curHintID = 0
+				el.innerHTML = hints[curHintID]
+				el.classList.remove('fade')
+			}, 500)
+		}
+		nextHint()
+		setInterval(nextHint, 10000)
+
+		function clamp(num){
+			return Math.min(Math.max(num, 0), 1)
+		}
+
+		var left = 1, stLeft = 5, filesTotal, wsTotal, filesLeft, wsLeft, finished;
+		function updateProgress() {
+			if (!filesLeft || !wsLeft) return
+			left = finished ? 0 : clamp(stLeft / 5) * 0.5 + clamp(filesLeft / filesTotal) * 0.1 + clamp(wsLeft / wsTotal) * 0.4
+		}
+
+		function SetStatusChanged(status){
+			if (status == 'Sending client info...'){
+				finished = true
+				document.getElementById('hint').innerHTML = 'Почти на месте...'
+			} else if (status.search(/Extracting|Loading/i) == -1) stLeft = Math.max(stLeft - 1, 0)
+			else wsLeft --
+
+			updateProgress()
+		}
+
+		// total server files
+		function SetFilesTotal(files){
+			if (!filesTotal){
+				filesTotal = files
+				filesLeft = files
+				updateProgress()
+			}
+		}
+
+		// total workshop items
+		function SetFilesNeeded(ws){
+			if (!wsTotal){
+				wsTotal = ws
+				wsLeft = ws
+				updateProgress()
+			}
+		}
+
+		function DownloadingFile(name){
+			filesLeft --
+			updateProgress()
+		}
+
+		var val = 1
+		setInterval(function(){
+			if (val == left) return
+
+			val = Math.max(val - Math.max((val - left) * 0.01, 0.00002), 0)
+			document.getElementById('car').style.left = (93 * (1 - val)) + '%'
+		}, 16)
+	</script>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'9047180eaf735434',t:'MTczNzI5MjUzMS4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script><iframe height="1" width="1" style="position: absolute; top: 0px; left: 0px; border: none; visibility: hidden;" src="./old.octothorp.team_files/saved_resource.html"></iframe><script defer="" src="./old.octothorp.team_files/vcd15cbe7772f49c399c6a5babf22c1241717689176015" integrity="sha512-ZpsOmlRQV6y907TI0dKBHq9Md29nnaEIPlkf84rnaERnq6zvWvPUqr2ft8M1aS28oN72PdrCzSjY4U6VaAw1EQ==" data-cf-beacon="{&quot;rayId&quot;:&quot;9047180eaf735434&quot;,&quot;version&quot;:&quot;2025.1.0&quot;,&quot;r&quot;:1,&quot;token&quot;:&quot;24f9e9d7b7014b868fc44b4f0b74bc43&quot;,&quot;serverTiming&quot;:{&quot;name&quot;:{&quot;cfExtPri&quot;:true,&quot;cfL4&quot;:true,&quot;cfSpeedBrain&quot;:true,&quot;cfCacheStatus&quot;:true}}}" crossorigin="anonymous"></script>
+
+
+</body></html>
